@@ -12,7 +12,53 @@ const gpa = util.gpa;
 const data = @embedFile("../data/day01.txt");
 
 pub fn main() !void {
+    { // Part 1
+        var input = split(u8, data, "\n");
+        var previous: usize = (try nextInt(&input)).?;
+        var count: usize = 0;
+        while (try nextInt(&input)) |current| {
+            if (current > previous) {
+                count += 1;
+            }
+            previous = current;
+        }
 
+        print("Part 1: {d}\n", .{count});
+    }
+
+    { // Part 2
+        var input = split(u8, data, "\n");
+        var buf = [_]usize{
+            (try nextInt(&input)).?,
+            (try nextInt(&input)).?,
+            (try nextInt(&input)).?,
+        };
+        var next: usize = 0;
+        var sum: usize = undefined;
+        var prev_sum: usize = buf[0] + buf[1] + buf[2];
+        var count: usize = 0;
+        while (try nextInt(&input)) |current| {
+            buf[next] = current;
+            next += 1;
+            next %= buf.len;
+            sum = buf[0] + buf[1] + buf[2];
+            if (sum > prev_sum) {
+                count += 1;
+            }
+            prev_sum = sum;
+        }
+
+        print("Part 2: {d}\n", .{count});
+    }
+}
+
+fn nextInt(iter: *std.mem.SplitIterator(u8)) !?usize {
+    if (iter.next()) |slice| blk: {
+        if (slice.len == 0) break :blk;
+        return try parseInt(usize, slice, 10);
+    }
+
+    return null;
 }
 
 // Useful stdlib functions
