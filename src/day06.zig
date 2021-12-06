@@ -11,8 +11,40 @@ const gpa = util.gpa;
 
 const data = @embedFile("../data/day06.txt");
 
+const Fish = struct {
+    count: [9]usize = std.mem.zeroes([9]usize),
+    offset: u8 = 0,
+
+    pub fn next(self: Fish, days: usize) Fish {
+        var new = self;
+        var i = days;
+        while (i > 0) : (i -= 1) {
+            new.count[(new.offset + 7) % 9] += new.count[new.offset];
+            new.offset += 1;
+            new.offset %= 9;
+        }
+        return new;
+    }
+
+    pub fn total(self: Fish) usize {
+        var num: usize = 0;
+        for (self.count) |fish| {
+            num += fish;
+        }
+        return num;
+    }
+};
+
 pub fn main() !void {
-    
+    var fish = Fish{};
+    var iter = tokenize(u8, data, ",\n");
+    while (iter.next()) |slice| {
+        const timer = try parseInt(u8, slice, 10);
+        fish.count[timer] += 1;
+    }
+
+    print("Part 1: {d}\n", .{fish.next(80).total()});
+    print("Part 2: {d}\n", .{fish.next(256).total()});
 }
 
 // Useful stdlib functions
