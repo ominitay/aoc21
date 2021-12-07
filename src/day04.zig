@@ -84,7 +84,7 @@ const Board = struct {
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(gpa);
     defer arena.deinit();
-    const allocator = &arena.allocator;
+    const allocator = arena.allocator();
 
     var input = split(u8, data, "\n\n");
     var picks = split(u8, input.next().?, ",");

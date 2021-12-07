@@ -14,7 +14,7 @@ const data = @embedFile("../data/day03.txt");
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(gpa);
     defer arena.deinit();
-    const allocator = &arena.allocator;
+    const allocator = arena.allocator();
 
     var input = try getInput(allocator);
     defer allocator.free(input);
@@ -61,7 +61,7 @@ pub fn main() !void {
     }
 }
 
-fn getInput(allocator: *Allocator) ![]const []const u8 {
+fn getInput(allocator: Allocator) ![]const []const u8 {
     var input = std.ArrayList([]const u8).init(allocator);
     errdefer input.deinit();
     {
@@ -75,7 +75,7 @@ fn getInput(allocator: *Allocator) ![]const []const u8 {
     return input.toOwnedSlice();
 }
 
-fn getRating(allocator: *Allocator, input: []const []const u8, priority_bit: u1) !usize {
+fn getRating(allocator: Allocator, input: []const []const u8, priority_bit: u1) !usize {
     const length = input[0].len;
     const keep = try allocator.alloc(bool, input.len);
     for (keep) |*b| b.* = true;

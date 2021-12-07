@@ -34,7 +34,7 @@ const VentMap = struct {
 
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(gpa);
-    const allocator = &arena.allocator;
+    const allocator = arena.allocator();
 
     var lines = blk: {
         var arraylist = std.ArrayList(Line).init(allocator);
