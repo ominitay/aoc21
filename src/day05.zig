@@ -22,13 +22,12 @@ const Line = struct {
 };
 
 const VentMap = struct {
-    map: Map(Coordinates, u8),
+    array: [1000][1000]usize = std.mem.zeroes([1000][1000]usize),
     count: usize = 0,
 
-    pub fn mark(self: *VentMap, coords: Coordinates) !void {
-        const entry = try self.map.getOrPutValue(coords, 0);
-        entry.value_ptr.* += 1;
-        if (entry.value_ptr.* == 2) self.count += 1;
+    pub fn mark(self: *VentMap, x: usize, y: usize) !void {
+        self.array[x][y] += 1;
+        if (self.array[x][y] == 2) self.count += 1;
     }
 };
 
@@ -53,8 +52,7 @@ pub fn main() !void {
     };
     defer allocator.free(lines);
 
-    var map = VentMap{ .map = Map(Coordinates, u8).init(allocator) };
-    defer map.map.deinit();
+    var map = VentMap{};
 
     for (lines) |line| {
         if (line.a.y == line.b.y) {
@@ -62,14 +60,14 @@ pub fn main() !void {
             var end = line.b.x;
             var i: i2 = if (x < end) 1 else -1;
             while (x - i != end) : (x += i) {
-                try map.mark(.{ .x = x, .y = line.a.y });
+                try map.mark(@intCast(usize, x), @intCast(usize, line.a.y));
             }
         } else if (line.a.x == line.b.x) {
             var y = line.a.y;
             var end = line.b.y;
             var i: i2 = if (y < end) 1 else -1;
             while (y - i != end) : (y += i) {
-                try map.mark(.{ .x = line.a.x, .y = y });
+                try map.mark(@intCast(usize, line.a.x), @intCast(usize, y));
             }
         }
     }
@@ -88,7 +86,7 @@ pub fn main() !void {
                 x += x_i;
                 y += y_i;
             }) {
-                try map.mark(.{ .x = x, .y = y });
+                try map.mark(@intCast(usize, x), @intCast(usize, y));
             }
         }
     }
